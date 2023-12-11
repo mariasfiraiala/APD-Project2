@@ -1,12 +1,14 @@
 /* Implement this class. */
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MyDispatcher extends Dispatcher {
-    private int lastWorker = -1;
+    private AtomicInteger lastWorker;
 
     public MyDispatcher(SchedulingAlgorithm algorithm, List<Host> hosts) {
         super(algorithm, hosts);
+        this.lastWorker = new AtomicInteger(-1);
     }
 
     @Override
@@ -20,7 +22,7 @@ public class MyDispatcher extends Dispatcher {
     }
 
     private void RoundRobin(Task task) {
-        hosts.get((++lastWorker) % hosts.size()).addTask(task);
+        hosts.get((lastWorker.addAndGet(1)) % hosts.size()).addTask(task);
     }
 
     private void ShortestQueue(Task task) {
