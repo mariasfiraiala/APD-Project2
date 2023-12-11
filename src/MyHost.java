@@ -3,14 +3,26 @@
 import java.time.Duration;
 import java.time.Instant;
 import java.util.PriorityQueue;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MyHost extends Host {
 
-    private PriorityQueue<Task> pq = new PriorityQueue<Task>();
+    private PriorityBlockingQueue<Task> pq;
     private Task executingTask;
 
-    private boolean isExecuting = false;
-    private static final Object lock = new Object();
+    private boolean isExecuting ;
+    private final Object lock;
+    private AtomicBoolean hasFinished;
+
+    public MyHost() {
+        super();
+        this.pq = new PriorityBlockingQueue<>();
+        this.executingTask = null;
+        this.isExecuting = false;
+        this.lock = new Object();
+        this.hasFinished = new AtomicBoolean(false);
+    }
 
     private void execute() {
         if (!pq.isEmpty()) {
@@ -28,14 +40,16 @@ public class MyHost extends Host {
                 }
 
                 executingTask.setLeft(0);
+                executingTask.finish();
                 isExecuting = false;
+                executingTask = null;
             }
         }
     }
 
     @Override
     public void run() {
-        while (true) {
+        while (!hasFinished.get()) {
             execute();
         }
     }
@@ -68,5 +82,6 @@ public class MyHost extends Host {
 
     @Override
     public void shutdown() {
+        hasFinished.set(true);
     }
 }
