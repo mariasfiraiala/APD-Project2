@@ -2,7 +2,7 @@
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.PriorityQueue;
+import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -17,7 +17,7 @@ public class MyHost extends Host {
 
     public MyHost() {
         super();
-        this.pq = new PriorityBlockingQueue<>();
+        this.pq = new PriorityBlockingQueue<Task>(1, new CustomComparator());
         this.executingTask = null;
         this.isExecuting = false;
         this.lock = new Object();
@@ -85,3 +85,15 @@ public class MyHost extends Host {
         hasFinished.set(true);
     }
 }
+
+class CustomComparator implements Comparator<Task> {
+    public int compare(Task t1, Task t2){
+        if (t1.getPriority() < t2.getPriority()) {
+            return 1;
+        } else if (t1.getPriority() > t2.getPriority()) {
+            return -1;
+        }
+        return 0;
+    }
+}
+

@@ -12,7 +12,7 @@ public class MyDispatcher extends Dispatcher {
     }
 
     @Override
-    public void addTask(Task task) {
+    public synchronized void addTask(Task task) {
         switch (algorithm) {
             case ROUND_ROBIN -> RoundRobin(task);
             case SHORTEST_QUEUE -> ShortestQueue(task);
@@ -64,3 +64,4 @@ public class MyDispatcher extends Dispatcher {
         minHost.addTask(task);
     }
 }
+
