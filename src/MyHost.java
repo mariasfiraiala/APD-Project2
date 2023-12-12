@@ -31,12 +31,10 @@ public class MyHost extends Host {
                 isExecuting = true;
 
                 Instant start = Instant.now();
-                while (true) {
+                while (executingTask.getLeft() > 0) {
                     Instant end = Instant.now();
                     Duration timeElapsed = Duration.between(start, end);
-                    if (timeElapsed.toMillis() >= executingTask.getLeft()) {
-                        break;
-                    }
+                    executingTask.setLeft(executingTask.getDuration() - timeElapsed.toMillis());
                 }
 
                 executingTask.setLeft(0);
