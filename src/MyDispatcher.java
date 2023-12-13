@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MyDispatcher extends Dispatcher {
-    private AtomicInteger lastWorker;
+    private final AtomicInteger lastWorker;
 
     public MyDispatcher(SchedulingAlgorithm algorithm, List<Host> hosts) {
         super(algorithm, hosts);
@@ -31,7 +31,6 @@ public class MyDispatcher extends Dispatcher {
 
         for (Host h : hosts) {
             int tasks = h.getQueueSize();
-            tasks += ((MyHost)h).isExecuting() ? 1 : 0;
 
             if (tasks < minQueue) {
                 minQueue = tasks;

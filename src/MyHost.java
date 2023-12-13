@@ -8,7 +8,6 @@ public class MyHost extends Host {
 
     private PriorityBlockingQueue<Task> pq;
     private Task executingTask;
-
     private boolean isExecuting ;
     private final AtomicBoolean hasFinished;
     private final AtomicBoolean biggerPriority;
@@ -68,7 +67,7 @@ public class MyHost extends Host {
 
     @Override
     public int getQueueSize() {
-        return pq.size();
+        return pq.size() + (isExecuting ? 1 : 0);
     }
 
     @Override
