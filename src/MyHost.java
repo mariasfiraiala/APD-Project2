@@ -12,36 +12,40 @@ public class MyHost extends Host {
     private Task executingTask;
 
     private boolean isExecuting ;
-    private final Object lock;
     private AtomicBoolean hasFinished;
+    private AtomicBoolean biggerPriority;
 
     public MyHost() {
         super();
         this.pq = new PriorityBlockingQueue<Task>(1, new CustomComparator());
         this.executingTask = null;
         this.isExecuting = false;
-        this.lock = new Object();
         this.hasFinished = new AtomicBoolean(false);
+        this.biggerPriority = new AtomicBoolean(false);
     }
 
     private void execute() {
         if (!pq.isEmpty()) {
-            synchronized (lock) {
-                executingTask = pq.poll();
-                isExecuting = true;
+            executingTask = pq.poll();
+            isExecuting = true;
 
-                Instant start = Instant.now();
-                while (executingTask.getLeft() > 0) {
-                    Instant end = Instant.now();
-                    Duration timeElapsed = Duration.between(start, end);
-                    executingTask.setLeft(executingTask.getDuration() - timeElapsed.toMillis());
+            while (executingTask.getLeft() > 0 && !biggerPriority.get()) {
+                try {
+                    sleep(5, 0);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-
-                executingTask.setLeft(0);
-                executingTask.finish();
-                isExecuting = false;
-                executingTask = null;
+                executingTask.setLeft(executingTask.getLeft() - 5);
             }
+
+            if (executingTask.getLeft() > 0) {
+                pq.add(executingTask);
+            } else {
+                executingTask.finish();
+            }
+            biggerPriority.set(false);
+            isExecuting = false;
+            executingTask = null;
         }
     }
 
@@ -58,6 +62,9 @@ public class MyHost extends Host {
 
     @Override
     public void addTask(Task task) {
+        if (executingTask != null && executingTask.isPreemptible() && task.getPriority() > executingTask.getPriority()) {
+            biggerPriority.set(true);
+        }
         pq.add(task);
     }
 
@@ -89,6 +96,12 @@ class CustomComparator implements Comparator<Task> {
         if (t1.getPriority() < t2.getPriority()) {
             return 1;
         } else if (t1.getPriority() > t2.getPriority()) {
+            return -1;
+        }
+
+        if (t1.getStart() > t2.getStart()) {
+            return 1;
+        } else if (t1.getStart() < t2.getStart()) {
             return -1;
         }
         return 0;
