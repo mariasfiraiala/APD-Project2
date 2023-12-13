@@ -1,7 +1,5 @@
 /* Implement this class. */
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -12,8 +10,8 @@ public class MyHost extends Host {
     private Task executingTask;
 
     private boolean isExecuting ;
-    private AtomicBoolean hasFinished;
-    private AtomicBoolean biggerPriority;
+    private final AtomicBoolean hasFinished;
+    private final AtomicBoolean biggerPriority;
 
     public MyHost() {
         super();
@@ -31,11 +29,11 @@ public class MyHost extends Host {
 
             while (executingTask.getLeft() > 0 && !biggerPriority.get()) {
                 try {
-                    sleep(5, 0);
+                    sleep(10);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                executingTask.setLeft(executingTask.getLeft() - 5);
+                executingTask.setLeft(executingTask.getLeft() - 10);
             }
 
             if (executingTask.getLeft() > 0) {

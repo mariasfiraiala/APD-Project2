@@ -12,7 +12,7 @@ public class MyDispatcher extends Dispatcher {
     }
 
     @Override
-    public synchronized void addTask(Task task) {
+    public void addTask(Task task) {
         switch (algorithm) {
             case ROUND_ROBIN -> RoundRobin(task);
             case SHORTEST_QUEUE -> ShortestQueue(task);
@@ -52,10 +52,10 @@ public class MyDispatcher extends Dispatcher {
 
     private void LeastWorkLeft(Task task) {
         long minWork = Long.MAX_VALUE;
-        Host minHost = new MyHost();
+        Host minHost = null;
 
         for (Host h : hosts) {
-            if(h.getWorkLeft() < minWork) {
+            if (h.getWorkLeft() < minWork) {
                 minWork = h.getWorkLeft();
                 minHost = h;
             }
