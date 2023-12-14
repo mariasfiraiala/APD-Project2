@@ -14,18 +14,18 @@ public class MyDispatcher extends Dispatcher {
     @Override
     public void addTask(Task task) {
         switch (algorithm) {
-            case ROUND_ROBIN -> RoundRobin(task);
-            case SHORTEST_QUEUE -> ShortestQueue(task);
-            case SIZE_INTERVAL_TASK_ASSIGNMENT -> SizeIntervalTaskAssignment(task);
-            case LEAST_WORK_LEFT -> LeastWorkLeft(task);
+            case ROUND_ROBIN -> roundRobin(task);
+            case SHORTEST_QUEUE -> shortestQueue(task);
+            case SIZE_INTERVAL_TASK_ASSIGNMENT -> sizeIntervalTaskAssignment(task);
+            case LEAST_WORK_LEFT -> leastWorkLeft(task);
         }
     }
 
-    private void RoundRobin(Task task) {
+    private void roundRobin(Task task) {
         hosts.get((lastWorker.addAndGet(1)) % hosts.size()).addTask(task);
     }
 
-    private void ShortestQueue(Task task) {
+    private void shortestQueue(Task task) {
         int minQueue = Integer.MAX_VALUE;
         Host minHost = new MyHost();
 
@@ -41,7 +41,7 @@ public class MyDispatcher extends Dispatcher {
         minHost.addTask(task);
     }
 
-    private void SizeIntervalTaskAssignment(Task task) {
+    private void sizeIntervalTaskAssignment(Task task) {
         switch (task.getType()) {
             case SHORT -> hosts.get(0).addTask(task);
             case MEDIUM -> hosts.get(1).addTask(task);
@@ -49,7 +49,7 @@ public class MyDispatcher extends Dispatcher {
         }
     }
 
-    private void LeastWorkLeft(Task task) {
+    private void leastWorkLeft(Task task) {
         long minWork = Long.MAX_VALUE;
         Host minHost = null;
 

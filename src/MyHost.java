@@ -23,18 +23,23 @@ public class MyHost extends Host {
 
     private void execute() {
         if (!pq.isEmpty()) {
+            // Get the task with the biggest priority
             executingTask = pq.poll();
             isExecuting = true;
 
+            // Execute task only if its time slice is bigger than 0,
+            // and it's not yet preempted
             while (executingTask.getLeft() > 0 && !biggerPriority.get()) {
                 try {
-                    sleep(10);
+                    sleep(100);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                executingTask.setLeft(executingTask.getLeft() - 10);
+                executingTask.setLeft(executingTask.getLeft() - 100);
             }
 
+            // If the task was preempted add it back to the queue
+            // Otherwise, finish it
             if (executingTask.getLeft() > 0) {
                 pq.add(executingTask);
             } else {

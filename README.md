@@ -8,13 +8,13 @@ Copyright 2023 Maria Sfiraiala (maria.sfiraiala@stud.acs.upb.ro)
 
 The load balancer gets tasks via the `addTask()` method and, based on the algorithm, calls the appropriate method:
 
-* `RoundRobin()`: simply increment the id of the last worker that was assigned work
+* `roundRobin()`: simply increment the id of the last worker that was assigned work
 
-* `ShortestQueue()`: query all hosts for the smallest queue
+* `shortestQueue()`: query all hosts for the smallest queue
 
-* `SizeIntervalTaskAssignment`: based on the size of the task, send it to the first, second or third host (we know for a fact that there are only 3 hosts)
+* `sizeIntervalTaskAssignment`: based on the size of the task, send it to the first, second or third host (we know for a fact that there are only 3 hosts)
 
-* `LeastWorkLeft()`: query all hosts for the smallest sum of milliseconds remained to be executed
+* `leastWorkLeft()`: query all hosts for the smallest sum of milliseconds remained to be executed
 
 > **Note**: The value that stores the id of the last host that was assigned work should be an `AtomicInteger` due to the fact that there are multiple `TaskGenerators` threads that send work to the load balancer.
 
@@ -27,8 +27,8 @@ The preemption of the running "thread" is done via a flag, `biggerPriority`, tha
 
 The scheduling algorithm is simulated by the custom comparator associated to the `PriorityBlockingQueue` entity.
 
-The time spent busy waiting is counted with the help of a `sleep(10)` call.
-After this call ends, we retrieve 10 milliseconds from the remaining time of the current "thread".
+The time spent busy waiting is counted with the help of a `sleep(100)` call.
+After this call ends, we retrieve 100 milliseconds from the remaining time of the current "thread".
 
 > **Note**: Simulating the task's running time is hard, due to the fact that the while loop takes so little to execute and, as a result, querying the time results in near 0 values (for milliseconds).
 A previous implementation  of mine (though logically speaking, fine) was faulty due to this exact reason:
@@ -43,7 +43,7 @@ while (executingTask.getLeft() > 0) {
 }
 ```
 
-Hence the approximation with the 10 milliseconds.
+Hence the approximation with the 100 milliseconds.
 
 ## Observations Regarding the Project
 
